@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 import "./pages.css";
 
@@ -26,19 +27,22 @@ const Login = () => {
                   />
                </div>
                <div className="mb-3">
-                  <a herf="#" className="form-link text-decoration-none">
+                  <Link
+                     to="/reset-password"
+                     className="form-link text-decoration-none"
+                  >
                      Forgot Password
-                  </a>
+                  </Link>
                </div>
                <button type="submit" className="btn btn-primary w-100">
-                  Submit
+                  Login
                </button>
             </form>
             <p className="mt-5 text-center">
                Don't have an account?{" "}
-               <a herf="#" className="border-bottom-1 py-2">
+               <Link to="/register" className="border-bottom-1 py-2">
                   Sign up
-               </a>
+               </Link>
             </p>
          </div>
       </div>
