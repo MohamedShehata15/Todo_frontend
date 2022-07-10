@@ -1,0 +1,48 @@
+.form {
+   min-width: 350px;
+}
+.form form {
+   border-radius: 15px;
+   box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+   position: relative;
+   min-height: 350px;
+}
+
+.form form button[type="submit"] {
+   position: absolute;
+   width: 80% !important;
+   left: 50%;
+   transform: translateX(-50%);
+   background-color: var(--main-color);
+   bottom: -15px;
+}
+
+.form .icon {
+   width: 65px;
+   height: 65px;
+   background: var(--main-color);
+   border-radius: 50%;
+   color: #fff;
+   font-size: 1.5rem;
+   margin: 0 auto 30px;
+}
+
+.form input {
+   height: 48px;
+   background: rgba(0, 0, 0, 0.05);
+   color: #000;
+   font-size: 16px;
+   -webkit-box-shadow: none;
+   box-shadow: none;
+   border: 1px solid transparent;
+   padding-left: 20px;
+   padding-right: 20px;
+}
+.form input:focus {
+   border-color: transparent !important;
+}
+
+.form a {
+   color: var(--main-color) !important;
+   cursor: pointer;
+}
