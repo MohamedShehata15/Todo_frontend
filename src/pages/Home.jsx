@@ -1,7 +1,12 @@
 import React from "react";
+import DragList from "./../components/DragList";
 
 const Home = () => {
-   return <div>Home</div>;
+   return (
+      <div>
+         <DragList />
+      </div>
+   );
 };
 
 export default Home;
