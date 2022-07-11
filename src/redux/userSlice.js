@@ -10,14 +10,22 @@ export const login = createAsyncThunk(
             data
          );
 
-         return response.data;
+         console.log(response.status);
+
+         if (response.status === 200) {
+            localStorage.setItem("userData", JSON.stringify(response.data));
+
+            return response.data;
+         } else {
+            return rejectWithValue(response.data);
+         }
       } catch (err) {
          return rejectWithValue(err.response.data);
       }
    }
 );
 
-export const register = createAsyncThunk(
+export const signup = createAsyncThunk(
    "user/signup",
    async (data, { rejectWithValue }) => {
       try {
@@ -42,18 +50,26 @@ const userSlice = createSlice({
       isSuccess: false,
       isError: false,
       errorMessage: "",
-      loading: false,
+      successMessage: "",
    },
-   reducers: {},
+   reducers: {
+      clearState: (state) => {
+         state.isError = false;
+         state.isSuccess = false;
+         state.isFetching = false;
+         state.loading = false;
+
+         return state;
+      },
+   },
    extraReducers: {
+      // Login
       [login.pending]: (state) => {
-         state.loading = true;
          state.isFetching = true;
       },
       [login.fulfilled]: (state, action) => {
          state.userDate = action.payload.user;
          state.token = action.payload.token;
-         state.loading = false;
          state.isError = false;
          state.isSuccess = true;
 
@@ -63,24 +79,25 @@ const userSlice = createSlice({
          state.isError = true;
          state.errorMessage = action.payload.message;
          state.isSuccess = false;
-         state.loading = false;
       },
 
-      // Register
-      [register.pending]: (state) => {
-         state.loading = true;
+      // Signup
+      [signup.pending]: (state) => {
+         state.isFetching = true;
       },
-      [register.fulfilled]: (state, action) => {
-         state.message = action.payload.message;
-         state.loading = false;
-         state.error = false;
+      [signup.fulfilled]: (state, action) => {
+         state.successMessage = action.payload.message;
+         state.isError = false;
+         state.isSuccess = true;
       },
-      [register.rejected]: (state, action) => {
-         state.error = true;
-         state.errObj = action.payload;
-         state.loading = false;
+      [signup.rejected]: (state, action) => {
+         state.isError = true;
+         state.errorMessage = action.payload.message;
+         state.isSuccess = false;
       },
    },
 });
+
+export const { clearState } = userSlice.actions;
 
 export default userSlice.reducer;
