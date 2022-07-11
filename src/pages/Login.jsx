@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { login } from "./../redux/userSlice";
 
 import "./pages.css";
-import axios from "axios";
 
 const Login = () => {
    const [data, setData] = useState({});
@@ -22,7 +21,7 @@ const Login = () => {
       if (user.token) {
          navigate("/");
       }
-   }, [user]);
+   }, [user, navigate]);
 
    const handleSubmit = async (e) => {
       e.preventDefault();
@@ -32,7 +31,7 @@ const Login = () => {
    return (
       <div className="form-container d-flex justify-content-center align-items-center vh-100">
          <div className="form m-auto">
-            <h2 className="text-center mb-3">Login {user.data.name}</h2>
+            <h2 className="text-center mb-3">Login</h2>
             <form className="bg-white p-5" onSubmit={handleSubmit}>
                <div className="icon d-flex justify-content-center align-items-center">
                   <span className="fa-solid fa-user"></span>
