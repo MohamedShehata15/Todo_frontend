@@ -1,29 +1,57 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-
-import { useDispatch } from "react-redux/es/exports";
-import { register } from "../redux/userSlice";
+import { useSelector, useDispatch } from "react-redux/es/exports";
+import { clearState, signup } from "../redux/userSlice";
+import { useForm } from "react-hook-form";
+import { Navigate, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 import "./pages.css";
 
 const Register = () => {
-   const [data, setData] = useState({});
    const dispatch = useDispatch();
+   const user = useSelector((state) => state.user);
+   const {
+      register,
+      handleSubmit,
+      formState: { errors },
+      watch,
+   } = useForm();
+   const navigate = useNavigate();
+   const password = useRef({});
 
-   const handleChange = (e) => {
-      setData({ ...data, [e.target.name]: e.target.value });
+   password.current = watch("password", "");
+
+   const onSubmit = (data) => {
+      dispatch(signup(data));
    };
 
-   const handleSubmit = (e) => {
-      e.preventDefault();
-      dispatch(register(data));
-   };
+   useEffect(() => {
+      dispatch(clearState());
+   }, []);
 
-   return (
+   useEffect(() => {
+      if (user.isSuccess) {
+         toast.success(user.successMessage, {
+            duration: 8000,
+         });
+         dispatch(clearState());
+         navigate("/login");
+      }
+
+      if (user.isError) {
+         toast.error(user.errorMessage);
+         dispatch(clearState());
+      }
+   }, [user.isSuccess, user.isError]);
+
+   return localStorage.getItem("userData") ? (
+      <Navigate to="/" replace />
+   ) : (
       <div className="form-container d-flex justify-content-center align-items-center vh-100">
          <div className="form m-auto">
             <h2 className="text-center mb-3">Register</h2>
-            <form className="bg-white p-5" onSubmit={handleSubmit}>
+            <form className="bg-white p-5" onSubmit={handleSubmit(onSubmit)}>
                <div className="icon d-flex justify-content-center align-items-center">
                   <span className="fa-solid fa-user"></span>
                </div>
@@ -32,18 +60,30 @@ const Register = () => {
                      type="text"
                      className="form-control"
                      placeholder="Name"
-                     name="name"
-                     onChange={handleChange}
+                     {...register("name", {
+                        required: "Name is required",
+                     })}
                   />
+                  {errors.name && (
+                     <p className="text-danger">{errors.name.message}</p>
+                  )}
                </div>
                <div className="mb-3">
                   <input
                      type="email"
                      className="form-control"
                      placeholder="Email"
-                     name="email"
-                     onChange={handleChange}
+                     {...register("email", {
+                        required: "Email is required",
+                        pattern: {
+                           value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                           message: "Invalid email address",
+                        },
+                     })}
                   />
+                  {errors.email && (
+                     <p className="text-danger">{errors.email.message}</p>
+                  )}
                </div>
                <div className="mb-3">
                   <input
@@ -51,8 +91,13 @@ const Register = () => {
                      className="form-control"
                      placeholder="Password"
                      name="password"
-                     onChange={handleChange}
+                     {...register("password", {
+                        required: "Password is required",
+                     })}
                   />
+                  {errors.password && (
+                     <p className="text-danger">{errors.password.message}</p>
+                  )}
                </div>
                <div className="mb-3">
                   <input
@@ -60,11 +105,34 @@ const Register = () => {
                      className="form-control"
                      placeholder="Password Confirmation"
                      name="passwordConfirmation"
-                     onChange={handleChange}
+                     {...register("passwordConfirmation", {
+                        required: "Password Confirmation is required",
+                        validate: (value) => {
+                           if (value !== password.current)
+                              return "Passwords do not match";
+                        },
+                     })}
                   />
+                  {errors.passwordConfirmation && (
+                     <p className="text-danger">
+                        {errors.passwordConfirmation.message}
+                     </p>
+                  )}
                </div>
-               <button type="submit" className="btn btn-primary w-100">
-                  Sign up
+               <button
+                  type="submit"
+                  className={`btn btn-primary w-100  ${
+                     user.isFetching ? "disabled" : ""
+                  }`}
+               >
+                  {user.isFetching ? (
+                     <div
+                        className="spinner-border text-light spinner-border-sm"
+                        role="status"
+                     ></div>
+                  ) : (
+                     " Sign up"
+                  )}
                </button>
             </form>
             <p className="mt-5 text-center">
