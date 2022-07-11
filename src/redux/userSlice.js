@@ -12,7 +12,22 @@ export const login = createAsyncThunk(
 
          return response.data;
       } catch (err) {
-         console.error("error");
+         return rejectWithValue(err.response.data);
+      }
+   }
+);
+
+export const register = createAsyncThunk(
+   "user/signup",
+   async (data, { rejectWithValue }) => {
+      try {
+         const response = await axios.post(
+            "http://localhost:4000/users/signup",
+            data
+         );
+
+         return response.data;
+      } catch (err) {
          return rejectWithValue(err.response.data);
       }
    }
@@ -21,24 +36,46 @@ export const login = createAsyncThunk(
 const userSlice = createSlice({
    name: "user",
    initialState: {
-      data: {},
-      loading: null,
-      error: false,
-      token: null,
-      errObj: {},
+      userDate: {},
+      token: "",
+      isFetching: false,
+      isSuccess: false,
+      isError: false,
+      errorMessage: "",
+      loading: false,
    },
    reducers: {},
    extraReducers: {
-      [login.pending]: (state, action) => {
+      [login.pending]: (state) => {
          state.loading = true;
+         state.isFetching = true;
       },
       [login.fulfilled]: (state, action) => {
-         state.data = action.payload.user;
+         state.userDate = action.payload.user;
          state.token = action.payload.token;
+         state.loading = false;
+         state.isError = false;
+         state.isSuccess = true;
+
+         localStorage.setItem("user", JSON.stringify(state.data));
+      },
+      [login.rejected]: (state, action) => {
+         state.isError = true;
+         state.errorMessage = action.payload.message;
+         state.isSuccess = false;
+         state.loading = false;
+      },
+
+      // Register
+      [register.pending]: (state) => {
+         state.loading = true;
+      },
+      [register.fulfilled]: (state, action) => {
+         state.message = action.payload.message;
          state.loading = false;
          state.error = false;
       },
-      [login.rejected]: (state, action) => {
+      [register.rejected]: (state, action) => {
          state.error = true;
          state.errObj = action.payload;
          state.loading = false;
