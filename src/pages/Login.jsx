@@ -1,38 +1,53 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux/es/exports";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 import { login } from "./../redux/userSlice";
+import { clearState } from "./../redux/userSlice";
 
 import "./pages.css";
 
 const Login = () => {
-   const [data, setData] = useState({});
    const user = useSelector((state) => state.user);
    const dispatch = useDispatch();
    const navigate = useNavigate();
+   const {
+      register,
+      handleSubmit,
+      formState: { errors },
+   } = useForm();
 
-   const handleChange = (e) => {
-      setData({ ...data, [e.target.name]: e.target.value });
-   };
-
-   useEffect(() => {
-      if (user.token) {
-         navigate("/");
-      }
-   }, [user, navigate]);
-
-   const handleSubmit = async (e) => {
-      e.preventDefault();
+   const onSubmit = (data) => {
+      console.log(data);
       dispatch(login(data));
    };
 
-   return (
+   useEffect(() => {
+      dispatch(clearState());
+   }, []);
+
+   useEffect(() => {
+      if (user.isSuccess) {
+         dispatch(clearState());
+         navigate("/");
+      }
+
+      if (user.isError) {
+         toast.error(user.errorMessage);
+         dispatch(clearState());
+      }
+   }, [user.isSuccess, user.isError]);
+
+   return localStorage.getItem("userData") ? (
+      <Navigate to="/" replace />
+   ) : (
       <div className="form-container d-flex justify-content-center align-items-center vh-100">
          <div className="form m-auto">
             <h2 className="text-center mb-3">Login</h2>
-            <form className="bg-white p-5" onSubmit={handleSubmit}>
+            <form className="bg-white p-5" onSubmit={handleSubmit(onSubmit)}>
                <div className="icon d-flex justify-content-center align-items-center">
                   <span className="fa-solid fa-user"></span>
                </div>
@@ -41,21 +56,33 @@ const Login = () => {
                      type="email"
                      className="form-control"
                      placeholder="Email"
-                     name="email"
-                     onChange={handleChange}
+                     {...register("email", {
+                        required: "Email is required",
+                        pattern: {
+                           value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i,
+                           message: "Invalid email address",
+                        },
+                     })}
                   />
+                  {errors.email && (
+                     <p className="text-danger">{errors.email.message}</p>
+                  )}
                </div>
                <div className="mb-3">
                   <input
                      type="password"
                      className="form-control"
                      placeholder="Password"
-                     name="password"
-                     onChange={handleChange}
+                     {...register("password", {
+                        required: "Password is required",
+                     })}
                   />
+                  {errors.password && (
+                     <p className="text-danger">{errors.password.message}</p>
+                  )}
                </div>
-               {user.error && (
-                  <p className="text-danger">{user.errObj.message}</p>
+               {user.isError && (
+                  <p className="text-danger">{user.errorMessage}</p>
                )}
                <div className="mb-3">
                   <Link
@@ -65,8 +92,21 @@ const Login = () => {
                      Forgot Password
                   </Link>
                </div>
-               <button type="submit" className="btn btn-primary w-100">
-                  Login
+
+               <button
+                  type="submit"
+                  className={`btn btn-primary w-100 ${
+                     user.isFetching ? "disabled" : ""
+                  }`}
+               >
+                  {user.isFetching ? (
+                     <div
+                        className="spinner-border text-light spinner-border-sm"
+                        role="status"
+                     ></div>
+                  ) : (
+                     " Login"
+                  )}
                </button>
             </form>
             <p className="mt-5 text-center">
