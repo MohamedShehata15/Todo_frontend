@@ -5,6 +5,7 @@ import "../app.css";
 import { useDispatch } from "react-redux/es/exports";
 import { removeTodo } from "./../redux/todoSlice";
 import Modal from "./Modal";
+import ModalView from "./ModalView";
 
 const ListItem = ({ item, index }) => {
    const dispatch = useDispatch();
@@ -28,7 +29,11 @@ const ListItem = ({ item, index }) => {
                      <span>{item.title}</span>
                      <span className="priority">{item.priority}</span>
                      <div className="controllers">
-                        <em className="fa fa-eye text-info" />
+                        <ModalView
+                           element={<em className="fa fa-eye text-info" />}
+                           item={item}
+                           id={`view-${item._id}`}
+                        />
 
                         <Modal
                            element={
