@@ -85,6 +85,24 @@ export const removeTodo = createAsyncThunk(
    }
 );
 
+/**
+ * @description: Create todo list
+ */
+export const createTodo = createAsyncThunk(
+   "todos/create",
+   async (data, { dispatch, rejectWithValue }) => {
+      dispatch(createTodoState(data));
+
+      try {
+         await axios.post("http://localhost:4000/todos", data, {
+            headers: authHeader(),
+         });
+      } catch (err) {
+         return rejectWithValue(err.response.data);
+      }
+   }
+);
+
 const todoSlice = createSlice({
    name: "todo",
    initialState: {
@@ -140,6 +158,14 @@ const todoSlice = createSlice({
 
          return state;
       },
+      createTodoState: (state, action) => {
+         state.todosList[action.payload.status].push({
+            ...action.payload,
+            todoId: Date.now(),
+         });
+
+         return state;
+      },
    },
    extraReducers: {
       /**
@@ -191,6 +217,22 @@ const todoSlice = createSlice({
       state.isError = true;
       state.isSuccess = false;
    },
+
+   /**
+    * Create Todo
+    */
+   [createTodo.pending]: (state) => {
+      state.isFetching = true;
+   },
+   [createTodo.fulfilled]: (state, action) => {
+      state.isError = false;
+      state.isSuccess = true;
+   },
+   [createTodo.rejected]: (state, action) => {
+      state.isError = true;
+      state.isSuccess = false;
+      state.errorMessage = action.payload.message;
+   },
 });
 
 export const {
@@ -199,6 +241,7 @@ export const {
    removeFromList,
    moveTodo,
    updateTodoState,
+   createTodoState,
 } = todoSlice.actions;
 
 export default todoSlice.reducer;

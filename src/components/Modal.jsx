@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux/es/exports";
-import { updateTodo } from "../redux/todoSlice";
+import { createTodo, updateTodo } from "../redux/todoSlice";
 
-const Modal = ({ element, id, item, todoIndex }) => {
+const Modal = ({ element, id, item, todoIndex, action }) => {
    const {
       register,
       handleSubmit,
@@ -11,20 +11,30 @@ const Modal = ({ element, id, item, todoIndex }) => {
    } = useForm();
    const dispatch = useDispatch();
 
+   const closeRef = useRef();
+
    const onSubmit = (data) => {
-      dispatch(
-         updateTodo({
-            id: item._id,
-            bodyData: data,
-            action: {
-               type: "update",
-               data: {
-                  todoStatus: item.status,
-                  todoIndex,
+      if (action === "update") {
+         dispatch(
+            updateTodo({
+               id: item._id,
+               bodyData: data,
+               action: {
+                  type: "update",
+                  data: {
+                     todoStatus: item.status,
+                     todoIndex,
+                  },
                },
-            },
-         })
-      );
+            })
+         );
+      } else if (action === "create") {
+         dispatch(createTodo(data));
+      }
+
+      if (Object.values(errors).length === 0) {
+         closeRef.current.click();
+      }
    };
 
    return (
@@ -103,8 +113,17 @@ const Modal = ({ element, id, item, todoIndex }) => {
                               defaultValue={item && item.status}
                               {...register("status", {
                                  required: "status is required",
+                                 validate: (value) =>
+                                    value === "todo" ||
+                                    value === "in progress" ||
+                                    value === "under review" ||
+                                    value === "rework" ||
+                                    value === "completed"
+                                       ? true
+                                       : "status is required",
                               })}
                            >
+                              <option defaultValue>Select a Status</option>
                               <option value="todo">Todo</option>
                               <option value="in progress">In Progress</option>
                               <option value="under review">Under Review</option>
@@ -124,6 +143,12 @@ const Modal = ({ element, id, item, todoIndex }) => {
                               defaultValue={item && item.priority}
                               {...register("priority", {
                                  required: "priority is required",
+                                 validate: (value) =>
+                                    value === "low" ||
+                                    value === "medium" ||
+                                    value === "high"
+                                       ? true
+                                       : "priority is required",
                               })}
                            >
                               <option defaultValue>Select a Priority</option>
@@ -158,18 +183,9 @@ const Modal = ({ element, id, item, todoIndex }) => {
                               </p>
                            )}
                         </div>
-                        {/* {user.isError && (
-                           <p className="text-danger">{user.errorMessage}</p>
-                        )} */}
 
-                        <button
-                           type="submit"
-                           className="btn btn-primary w-100"
-                           {...(Object.values(errors).length
-                              ? {}
-                              : { "data-bs-dismiss": "modal" })}
-                        >
-                           Update
+                        <button type="submit" className="btn btn-primary w-100">
+                           {action == "update" ? "Update" : "Create"}
                         </button>
                      </form>
                   </div>
@@ -178,6 +194,7 @@ const Modal = ({ element, id, item, todoIndex }) => {
                         type="button"
                         className="btn btn-secondary"
                         data-bs-dismiss="modal"
+                        ref={closeRef}
                      >
                         Close
                      </button>
