@@ -9,9 +9,8 @@ import Modal from "./Modal";
 const ListItem = ({ item, index }) => {
    const dispatch = useDispatch();
 
-   const handleRemove = (id, statusIndex) => {
-      console.log(statusIndex);
-      // dispatch(removeTodo({ id, status }));
+   const handleRemove = (id, todoStatus, todoIndex) => {
+      dispatch(removeTodo({ id, todoStatus, todoIndex }));
    };
 
    return (
@@ -40,7 +39,9 @@ const ListItem = ({ item, index }) => {
                         />
                         <em
                            className="fa fa-trash ms-2 text-danger"
-                           onClick={() => handleRemove(item._id, index)}
+                           onClick={() =>
+                              handleRemove(item._id, item.status, index)
+                           }
                         />
                      </div>
                   </div>

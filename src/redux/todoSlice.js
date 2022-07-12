@@ -54,10 +54,7 @@ export const updateTodo = createAsyncThunk(
                headers: authHeader(),
             }
          );
-         console.log("update todo");
-         return true;
       } catch (err) {
-         console.log(err);
          return rejectWithValue(err.response.data);
       }
    }
@@ -68,9 +65,9 @@ export const updateTodo = createAsyncThunk(
  */
 export const removeTodo = createAsyncThunk(
    "todos/delete",
-   async ({ id, status }, { rejectWithValue, dispatch }) => {
+   async ({ id, todoStatus, todoIndex }, { rejectWithValue, dispatch }) => {
       // Optimistic Delete
-      dispatch(deleteTodoState({ id, status }));
+      dispatch(deleteTodoState({ id, todoStatus, todoIndex }));
       try {
          await axios.delete(`http://localhost:4000/todos/${id}`, {
             headers: authHeader(),
@@ -101,11 +98,10 @@ const todoSlice = createSlice({
          return state;
       },
       deleteTodoState: (state, action) => {
-         state.todosList = state.todosList.filter(
-            (todo) => todo._id !== action.payload.id
+         state.todosList[action.payload.todoStatus].splice(
+            action.payload.todoIndex,
+            1
          );
-
-         state.deletedStatus = action.payload.status;
 
          return state;
       },
@@ -150,7 +146,6 @@ const todoSlice = createSlice({
       state.isFetching = true;
    },
    [updateTodo.fulfilled]: (state, action) => {
-      console.log("full filled");
       state.isError = false;
       state.isSuccess = true;
    },
