@@ -43,6 +43,21 @@ header .logout {
    grid-gap: 8px;
 }
 
+@media (max-width: 1025px) {
+   .list {
+      grid-template-columns: 1fr 1fr;
+   }
+}
+@media (max-width: 768px) {
+   .list {
+      grid-template-columns: 1fr;
+   }
+
+   .droppable {
+      min-height: 150px;
+   }
+}
+
 .drag_item {
    padding: 10px;
    border-radius: 6px;
