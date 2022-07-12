@@ -6,18 +6,7 @@ import DraggableElement from "./DraggableElement";
 import { getAllTodos, updateTodo } from "../redux/todoSlice";
 
 import "../app.css";
-
-const removeFromList = (list, index) => {
-   const result = Array.from(list);
-   const [removed] = result.splice(index, 1);
-   return [removed, result];
-};
-
-const addToList = (list, index, element) => {
-   const result = Array.from(list);
-   result.splice(index, 0, element);
-   return result;
-};
+import Modal from "./Modal";
 
 const lists = ["todo", "in progress", "under review", "rework", "completed"];
 
@@ -31,53 +20,27 @@ function DragList() {
       dispatch(getAllTodos());
    }, [todos.isFetching]);
 
-   useEffect(() => {
-      if (todos.todosList.length > 0) {
-         const result = lists.reduce(
-            (acc, listKey) => ({
-               ...acc,
-               [listKey]: todos.todosList.filter(
-                  (todo) => todo.status === listKey
-               ),
-            }),
-            {}
-         );
-         setElements(result);
-      }
-   }, [todos.isSuccess]);
-
    const onDragEnd = (result) => {
-      if (!result.destination) {
-         return;
-      }
-      const listCopy = { ...elements };
-
-      const sourceList = listCopy[result.source.droppableId];
-
-      const [removedElement, newSourceList] = removeFromList(
-         sourceList,
-         result.source.index
-      );
-
-      listCopy[result.source.droppableId] = newSourceList;
-      const destinationList = listCopy[result.destination.droppableId];
-      listCopy[result.destination.droppableId] = addToList(
-         destinationList,
-         result.destination.index,
-         removedElement
-      );
-
       const data = {
-         id: removedElement._id,
-         status: result.destination.droppableId,
+         action: {
+            type: "move",
+            data: {
+               todoId: result.draggableId,
+               destination: result.destination,
+               source: result.source,
+            },
+         },
+         id:
+            todos.todosList[result.source.droppableId][result.source.index]._id,
+         bodyData: { status: result.destination.droppableId },
       };
-      dispatch(updateTodo(data));
 
-      setElements(listCopy);
+      dispatch(updateTodo(data));
    };
 
    return todos.isSuccess ? (
       <div className="drag_drop_container p-3">
+         <Modal name="test" id="testId" />
          <DragDropContext onDragEnd={onDragEnd}>
             <div className="list">
                {lists.length !== 0 &&
@@ -85,7 +48,7 @@ function DragList() {
                      <DraggableElement
                         name={listName}
                         key={index}
-                        todos={elements}
+                        todos={todos.todosList}
                      />
                   ))}
             </div>
