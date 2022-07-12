@@ -24,3 +24,7 @@
    grid-gap: 20px;
    flex-direction: column;
 }
+
+.controllers em {
+   cursor: pointer;
+}
