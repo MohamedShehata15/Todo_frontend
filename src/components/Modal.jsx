@@ -25,8 +25,7 @@ const Modal = ({ element, id, item }) => {
          <div
             className="modal fade"
             id={`${id}`}
-            data-bs-backdrop="static"
-            data-bs-keyboard="false"
+            data-bs-keyboard="true"
             tabIndex="-1"
             aria-labelledby={`${id}Label`}
             aria-hidden="true"
