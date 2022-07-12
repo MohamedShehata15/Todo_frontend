@@ -10,8 +10,6 @@ export const login = createAsyncThunk(
             data
          );
 
-         console.log(response.status);
-
          if (response.status === 200) {
             localStorage.setItem("userData", JSON.stringify(response.data));
 
@@ -57,7 +55,6 @@ const userSlice = createSlice({
          state.isError = false;
          state.isSuccess = false;
          state.isFetching = false;
-         state.loading = false;
 
          return state;
       },
