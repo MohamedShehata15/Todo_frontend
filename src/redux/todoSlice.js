@@ -45,6 +45,13 @@ export const updateTodo = createAsyncThunk(
    "todos/update",
    async (data, { dispatch, rejectWithValue }) => {
       if (data.action.type === "move") dispatch(moveTodo(data.action.data));
+      else if (data.action.type === "update")
+         dispatch(
+            updateTodoState({
+               bodyData: data.bodyData,
+               todoIndex: data.action.data.todoIndex,
+            })
+         );
 
       try {
          const response = await axios.patch(
@@ -121,6 +128,18 @@ const todoSlice = createSlice({
 
          return state;
       },
+      updateTodoState: (state, action) => {
+         state.todosList[action.payload.bodyData.status][
+            action.payload.todoIndex
+         ] = {
+            ...state.todosList[action.payload.bodyData.status][
+               action.payload.todoIndex
+            ],
+            ...action.payload.bodyData,
+         };
+
+         return state;
+      },
    },
    extraReducers: {
       /**
@@ -179,6 +198,7 @@ export const {
    deleteTodoState,
    removeFromList,
    moveTodo,
+   updateTodoState,
 } = todoSlice.actions;
 
 export default todoSlice.reducer;

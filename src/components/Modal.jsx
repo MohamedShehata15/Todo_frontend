@@ -1,15 +1,30 @@
 import React from "react";
 import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux/es/exports";
+import { updateTodo } from "../redux/todoSlice";
 
-const Modal = ({ element, id, item }) => {
+const Modal = ({ element, id, item, todoIndex }) => {
    const {
       register,
       handleSubmit,
       formState: { errors },
    } = useForm();
+   const dispatch = useDispatch();
 
    const onSubmit = (data) => {
-      // dispatch(login(data));
+      dispatch(
+         updateTodo({
+            id: item._id,
+            bodyData: data,
+            action: {
+               type: "update",
+               data: {
+                  todoStatus: item.status,
+                  todoIndex,
+               },
+            },
+         })
+      );
    };
 
    return (
@@ -53,7 +68,8 @@ const Modal = ({ element, id, item }) => {
                               type="text"
                               className="form-control"
                               placeholder="Title"
-                              value={item && item.title}
+                              name="title"
+                              defaultValue={item && item.title}
                               {...register("title", {
                                  required: "Title is required",
                               })}
@@ -72,7 +88,7 @@ const Modal = ({ element, id, item }) => {
                               {...register("description", {
                                  required: "description is required",
                               })}
-                              value={item && item.description}
+                              defaultValue={item && item.description}
                            />
                            {errors.description && (
                               <p className="text-danger">
@@ -85,6 +101,9 @@ const Modal = ({ element, id, item }) => {
                               className="form-select"
                               aria-label="Default select example"
                               defaultValue={item && item.status}
+                              {...register("status", {
+                                 required: "status is required",
+                              })}
                            >
                               <option value="todo">Todo</option>
                               <option value="in progress">In Progress</option>
@@ -92,23 +111,43 @@ const Modal = ({ element, id, item }) => {
                               <option value="rework">Rework</option>
                               <option value="completed">Completed</option>
                            </select>
+                           {errors.status && (
+                              <p className="text-danger">
+                                 {errors.status.message}
+                              </p>
+                           )}
                         </div>
                         <div className="mb-3">
                            <select
                               className="form-select"
                               aria-label="Default select example"
+                              defaultValue={item && item.priority}
+                              {...register("priority", {
+                                 required: "priority is required",
+                              })}
                            >
                               <option defaultValue>Select a Priority</option>
                               <option value="low">Low</option>
                               <option value="medium">Medium</option>
                               <option value="high">High</option>
                            </select>
+                           {errors.priority && (
+                              <p className="text-danger">
+                                 {errors.priority.message}
+                              </p>
+                           )}
                         </div>
                         <div className="mb-3">
                            <input
                               type="date"
                               className="form-control"
                               placeholder="End Date"
+                              value={
+                                 item &&
+                                 new Date(item.endDate)
+                                    .toISOString()
+                                    .split("T")[0]
+                              }
                               {...register("endDate", {
                                  required: "End Date is required",
                               })}
@@ -123,16 +162,15 @@ const Modal = ({ element, id, item }) => {
                            <p className="text-danger">{user.errorMessage}</p>
                         )} */}
 
-                        <button type="submit" className="btn btn-primary w-100">
+                        <button
+                           type="submit"
+                           className="btn btn-primary w-100"
+                           {...(Object.values(errors).length
+                              ? {}
+                              : { "data-bs-dismiss": "modal" })}
+                        >
                            Update
                         </button>
-
-                        {/* <button
-                           type="submit"
-                           className={`btn btn-primary w-100 ${
-                              user.isFetching ? "disabled" : ""
-                           }`}
-                        ></button> */}
                      </form>
                   </div>
                   <div className="modal-footer">
