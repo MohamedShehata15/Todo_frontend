@@ -2,9 +2,16 @@ import React from "react";
 import Modal from "./Modal";
 
 import "../app.css";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
+   const navigate = useNavigate();
    const username = JSON.parse(localStorage.getItem("userData")).user.name;
+
+   const logout = () => {
+      localStorage.clear();
+      navigate("/login");
+   };
 
    return (
       <header>
@@ -22,7 +29,7 @@ const Header = () => {
             <div className="user">
                Hello, <span className="username">{username}</span>
             </div>
-            <div className="logout ms-3">
+            <div className="logout ms-3" onClick={logout}>
                <em className="fa fa-sign-out-alt text-danger" />
             </div>
          </div>
