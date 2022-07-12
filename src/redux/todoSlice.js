@@ -110,6 +110,9 @@ const todoSlice = createSlice({
             action.payload.source.droppableId
          ].splice(action.payload.source.index, 1);
 
+         // Change the status of the todo
+         targetTodo[0].status = action.payload.destination.droppableId;
+
          state.todosList[action.payload.destination.droppableId].splice(
             action.payload.destination.index,
             0,
