@@ -2,19 +2,33 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import authHeader from "./../helpers/authHeader";
 
+const organizeTodos = (todos) => {
+   const lists = ["todo", "in progress", "under review", "rework", "completed"];
+
+   const result = lists.reduce(
+      (acc, listKey) => ({
+         ...acc,
+         [listKey]: todos.filter((todo) => todo.status === listKey),
+      }),
+      {}
+   );
+
+   return result;
+};
+
 /**
  * @description: Initial state of the todos list
  */
 export const getAllTodos = createAsyncThunk(
    "todos/getAll",
-   async (data, { rejectWithValue }) => {
+   async (_, { rejectWithValue }) => {
       try {
          const response = await axios.get("http://localhost:4000/todos", {
             headers: authHeader(),
          });
 
          if (response.status === 200) {
-            return response.data;
+            return organizeTodos(response.data.todos);
          } else {
             return rejectWithValue(response.data);
          }
@@ -29,15 +43,38 @@ export const getAllTodos = createAsyncThunk(
  */
 export const updateTodo = createAsyncThunk(
    "todos/update",
-   async (data, { rejectWithValue }) => {
+   async (data, { dispatch, rejectWithValue }) => {
+      if (data.action.type === "move") dispatch(moveTodo(data.action.data));
+
       try {
          const response = await axios.patch(
             `http://localhost:4000/todos/${data.id}`,
-            data,
+            data.bodyData,
             {
                headers: authHeader(),
             }
          );
+         console.log("update todo");
+         return true;
+      } catch (err) {
+         console.log(err);
+         return rejectWithValue(err.response.data);
+      }
+   }
+);
+
+/**
+ * @description: Remove todo list
+ */
+export const removeTodo = createAsyncThunk(
+   "todos/delete",
+   async ({ id, status }, { rejectWithValue, dispatch }) => {
+      // Optimistic Delete
+      dispatch(deleteTodoState({ id, status }));
+      try {
+         await axios.delete(`http://localhost:4000/todos/${id}`, {
+            headers: authHeader(),
+         });
       } catch (err) {
          return rejectWithValue(err.response.data);
       }
@@ -47,18 +84,41 @@ export const updateTodo = createAsyncThunk(
 const todoSlice = createSlice({
    name: "todo",
    initialState: {
-      todosList: [],
+      todosList: {},
       isFetching: false,
       isSuccess: false,
       isError: false,
       errorMessage: "",
       successMessage: "",
+      deletedStatus: "",
    },
    reducers: {
       clearTodoState: (state) => {
          state.isError = false;
          state.isSuccess = false;
          state.isFetching = false;
+
+         return state;
+      },
+      deleteTodoState: (state, action) => {
+         state.todosList = state.todosList.filter(
+            (todo) => todo._id !== action.payload.id
+         );
+
+         state.deletedStatus = action.payload.status;
+
+         return state;
+      },
+      moveTodo: (state, action) => {
+         const targetTodo = state.todosList[
+            action.payload.source.droppableId
+         ].splice(action.payload.source.index, 1);
+
+         state.todosList[action.payload.destination.droppableId].splice(
+            action.payload.destination.index,
+            0,
+            targetTodo[0]
+         );
 
          return state;
       },
@@ -72,7 +132,7 @@ const todoSlice = createSlice({
          state.isFetching = true;
       },
       [getAllTodos.fulfilled]: (state, action) => {
-         state.todosList = action.payload.todos;
+         state.todosList = action.payload;
          state.isError = false;
          state.isSuccess = true;
       },
@@ -90,6 +150,7 @@ const todoSlice = createSlice({
       state.isFetching = true;
    },
    [updateTodo.fulfilled]: (state, action) => {
+      console.log("full filled");
       state.isError = false;
       state.isSuccess = true;
    },
@@ -98,8 +159,28 @@ const todoSlice = createSlice({
       state.isSuccess = false;
       state.errorMessage = action.payload.message;
    },
+
+   /**
+    * Delete Todo
+    */
+   [removeTodo.pending]: (state) => {
+      state.isFetching = true;
+   },
+   [removeTodo.fulfilled]: (state) => {
+      state.isError = false;
+      state.isSuccess = true;
+   },
+   [removeTodo.rejected]: (state) => {
+      state.isError = true;
+      state.isSuccess = false;
+   },
 });
 
-export const { clearTodoState } = todoSlice.actions;
+export const {
+   clearTodoState,
+   deleteTodoState,
+   removeFromList,
+   moveTodo,
+} = todoSlice.actions;
 
 export default todoSlice.reducer;
