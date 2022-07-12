@@ -1,3 +1,32 @@
+header {
+   background-color: #f5f5f5;
+   text-align: center;
+   box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}
+
+header .create_todo_btn {
+   background-color: var(--main-color);
+   border: none;
+   padding: 10px;
+   font-size: 16px;
+   cursor: pointer;
+}
+header .create_todo_btn:hover {
+   background-color: var(--dark-color) !important;
+}
+header .user {
+   font-size: 18px;
+}
+header .username {
+   color: var(--black-color);
+   font-size: 20px;
+   font-weight: 500;
+}
+header .logout {
+   font-size: 20px;
+   cursor: pointer;
+}
+
 .drag_drop_container {
    border-radius: 6px;
 }

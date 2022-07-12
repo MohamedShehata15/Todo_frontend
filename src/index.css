@@ -13,6 +13,7 @@ body {
    -webkit-font-smoothing: antialiased;
    -moz-osx-font-smoothing: grayscale;
    background-color: #f8f9fd;
+   position: relative;
    font-family: "Edu QLD Beginner", cursive;
    /* font-family: "Montserrat", sans-serif; */
    /* font-family: "Open Sans", sans-serif; */
