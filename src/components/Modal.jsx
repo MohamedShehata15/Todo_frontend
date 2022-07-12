@@ -185,7 +185,7 @@ const Modal = ({ element, id, item, todoIndex, action }) => {
                         </div>
 
                         <button type="submit" className="btn btn-primary w-100">
-                           {action == "update" ? "Update" : "Create"}
+                           {action === "update" ? "Update" : "Create"}
                         </button>
                      </form>
                   </div>

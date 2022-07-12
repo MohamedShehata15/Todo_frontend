@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { DragDropContext } from "react-beautiful-dnd";
 import { useSelector, useDispatch } from "react-redux/es/exports";
 
@@ -11,8 +11,6 @@ import Modal from "./Modal";
 const lists = ["todo", "in progress", "under review", "rework", "completed"];
 
 function DragList() {
-   const [elements, setElements] = useState([]);
-
    const dispatch = useDispatch();
    const todos = useSelector((state) => state.todos);
 

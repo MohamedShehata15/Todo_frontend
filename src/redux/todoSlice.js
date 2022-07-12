@@ -54,7 +54,7 @@ export const updateTodo = createAsyncThunk(
          );
 
       try {
-         const response = await axios.patch(
+         await axios.patch(
             `http://localhost:4000/todos/${data.id}`,
             data.bodyData,
             {
