@@ -37,6 +37,7 @@ const ListItem = ({ item, index }) => {
                            id={`edit-${item._id}`}
                            item={item}
                            todoIndex={index}
+                           action="update"
                         />
                         <em
                            className="fa fa-trash ms-2 text-danger"
