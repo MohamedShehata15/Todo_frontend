@@ -5,12 +5,12 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
-import { login } from "./../redux/userSlice";
+import { forgotPassword } from "./../redux/userSlice";
 import { clearState } from "./../redux/userSlice";
 
 import "./pages.css";
 
-const Login = () => {
+const ForgotPassword = () => {
    const user = useSelector((state) => state.user);
    const dispatch = useDispatch();
    const navigate = useNavigate();
@@ -21,7 +21,7 @@ const Login = () => {
    } = useForm();
 
    const onSubmit = (data) => {
-      dispatch(login(data));
+      dispatch(forgotPassword(data));
    };
 
    useEffect(() => {
@@ -30,8 +30,11 @@ const Login = () => {
 
    useEffect(() => {
       if (user.isSuccess) {
+         toast.success(user.successMessage, {
+            duration: 8000,
+         });
          dispatch(clearState());
-         navigate("/");
+         navigate("/login");
       }
 
       if (user.isError) {
@@ -67,25 +70,13 @@ const Login = () => {
                      <p className="text-danger">{errors.email.message}</p>
                   )}
                </div>
-               <div className="mb-3">
-                  <input
-                     type="password"
-                     className="form-control"
-                     placeholder="Password"
-                     {...register("password", {
-                        required: "Password is required",
-                     })}
-                  />
-                  {errors.password && (
-                     <p className="text-danger">{errors.password.message}</p>
-                  )}
-               </div>
+
                {user.isError && (
                   <p className="text-danger">{user.errorMessage}</p>
                )}
                <div className="mb-3">
                   <Link
-                     to="/forgot-password"
+                     to="/reset-password"
                      className="form-link text-decoration-none"
                   >
                      Forgot Password
@@ -104,7 +95,7 @@ const Login = () => {
                         role="status"
                      ></div>
                   ) : (
-                     " Login"
+                     " Send Email"
                   )}
                </button>
             </form>
@@ -119,4 +110,4 @@ const Login = () => {
    );
 };
 
-export default Login;
+export default ForgotPassword;

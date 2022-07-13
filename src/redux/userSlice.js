@@ -39,6 +39,17 @@ export const signup = createAsyncThunk(
    }
 );
 
+export const forgotPassword = createAsyncThunk(
+   "user/forgot-password",
+   async (data, { rejectWithValue }) => {
+      try {
+         await axios.post("http://localhost:4000/users/forgot-password", data);
+      } catch (err) {
+         return rejectWithValue(err.response.data);
+      }
+   }
+);
+
 const userSlice = createSlice({
    name: "user",
    initialState: {
@@ -88,6 +99,22 @@ const userSlice = createSlice({
          state.isSuccess = true;
       },
       [signup.rejected]: (state, action) => {
+         state.isError = true;
+         state.errorMessage = action.payload.message;
+         state.isSuccess = false;
+      },
+
+      // forgot password
+      [forgotPassword.pending]: (state) => {
+         state.isFetching = true;
+      },
+      [forgotPassword.fulfilled]: (state) => {
+         state.isError = false;
+         state.isSuccess = true;
+         state.successMessage =
+            "Password reset link has been sent to your email";
+      },
+      [forgotPassword.rejected]: (state, action) => {
          state.isError = true;
          state.errorMessage = action.payload.message;
          state.isSuccess = false;
