@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import ProtectedRoute from "./helpers/ProtectedRoute";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import EmailVerification from "./pages/EmailVerification";
 
 const App = () => {
    return (
@@ -20,6 +21,10 @@ const App = () => {
             <Route path="/register" element={<Register />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route
+               path="/email-verification/:token"
+               element={<EmailVerification />}
+            />
             <Route path="" element={<ProtectedRoute />}>
                <Route path="/" element={<Home />} />
             </Route>

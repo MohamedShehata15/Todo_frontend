@@ -60,6 +60,17 @@ export const resetPassword = createAsyncThunk(
    }
 );
 
+export const emailVerification = createAsyncThunk(
+   "user/email-verification",
+   async (token, { rejectWithValue }) => {
+      try {
+         await axios.patch(`${BASE_URL}users/email-verification/${token}`);
+      } catch (err) {
+         return rejectWithValue(err.response.data);
+      }
+   }
+);
+
 const userSlice = createSlice({
    name: "user",
    initialState: {
@@ -141,6 +152,21 @@ const userSlice = createSlice({
             "Password has been reset successfully. Please Login to continue";
       },
       [resetPassword.rejected]: (state, action) => {
+         state.isError = true;
+         state.errorMessage = action.payload.message;
+         state.isSuccess = false;
+      },
+
+      // Email Verification
+      [emailVerification.pending]: (state) => {
+         state.isFetching = true;
+      },
+      [emailVerification.fulfilled]: (state) => {
+         state.isError = false;
+         state.isSuccess = true;
+         state.successMessage = "Email verified successfully";
+      },
+      [emailVerification.rejected]: (state, action) => {
          state.isError = true;
          state.errorMessage = action.payload.message;
          state.isSuccess = false;
