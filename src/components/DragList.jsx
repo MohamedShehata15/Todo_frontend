@@ -15,7 +15,11 @@ function DragList() {
 
    useEffect(() => {
       dispatch(getAllTodos());
-   }, [todos.isFetching]);
+   }, [todos.isFetching, todos.createdElements]);
+
+   useEffect(() => {
+      dispatch(getAllTodos());
+   }, [todos.createdElements]);
 
    const onDragEnd = (result) => {
       const data = {

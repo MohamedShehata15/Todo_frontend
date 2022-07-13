@@ -73,6 +73,7 @@ export const removeTodo = createAsyncThunk(
    async ({ id, todoStatus, todoIndex }, { rejectWithValue, dispatch }) => {
       // Optimistic Delete
       dispatch(deleteTodoState({ id, todoStatus, todoIndex }));
+
       try {
          await axios.delete(`${BASE_URL}todos/${id}`, {
             headers: authHeader(),
@@ -111,6 +112,7 @@ const todoSlice = createSlice({
       errorMessage: "",
       successMessage: "",
       deletedStatus: "",
+      createdElements: [],
    },
    reducers: {
       clearTodoState: (state) => {
@@ -157,7 +159,11 @@ const todoSlice = createSlice({
          return state;
       },
       createTodoState: (state, action) => {
-         state.todosList[action.payload.status].push({
+         // state.todosList[action.payload.status].push({
+         //    ...action.payload,
+         //    todoId: Date.now(),
+         // });
+         state.createdElements.push({
             ...action.payload,
             todoId: Date.now(),
          });
