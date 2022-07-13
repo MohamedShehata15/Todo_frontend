@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import authHeader from "./../helpers/authHeader";
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 const organizeTodos = (todos) => {
    const lists = ["todo", "in progress", "under review", "rework", "completed"];
 
@@ -23,7 +25,7 @@ export const getAllTodos = createAsyncThunk(
    "todos/getAll",
    async (_, { rejectWithValue }) => {
       try {
-         const response = await axios.get("http://localhost:4000/todos", {
+         const response = await axios.get(`${BASE_URL}todos`, {
             headers: authHeader(),
          });
 
@@ -54,13 +56,9 @@ export const updateTodo = createAsyncThunk(
          );
 
       try {
-         await axios.patch(
-            `http://localhost:4000/todos/${data.id}`,
-            data.bodyData,
-            {
-               headers: authHeader(),
-            }
-         );
+         await axios.patch(`${BASE_URL}todos/${data.id}`, data.bodyData, {
+            headers: authHeader(),
+         });
       } catch (err) {
          return rejectWithValue(err.response.data);
       }
@@ -76,7 +74,7 @@ export const removeTodo = createAsyncThunk(
       // Optimistic Delete
       dispatch(deleteTodoState({ id, todoStatus, todoIndex }));
       try {
-         await axios.delete(`http://localhost:4000/todos/${id}`, {
+         await axios.delete(`${BASE_URL}todos/${id}`, {
             headers: authHeader(),
          });
       } catch (err) {
@@ -94,7 +92,7 @@ export const createTodo = createAsyncThunk(
       dispatch(createTodoState(data));
 
       try {
-         await axios.post("http://localhost:4000/todos", data, {
+         await axios.post(`${BASE_URL}todos`, data, {
             headers: authHeader(),
          });
       } catch (err) {

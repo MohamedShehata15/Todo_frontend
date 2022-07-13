@@ -1,14 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const BASE_URL = process.env.REACT_APP_BASE_URL;
+
 export const login = createAsyncThunk(
    "user/login",
    async (data, { rejectWithValue }) => {
       try {
-         const response = await axios.post(
-            "http://localhost:4000/users/login",
-            data
-         );
+         const response = await axios.post(`${BASE_URL}users/login`, data);
 
          if (response.status === 200) {
             localStorage.setItem("userData", JSON.stringify(response.data));
@@ -27,10 +26,7 @@ export const signup = createAsyncThunk(
    "user/signup",
    async (data, { rejectWithValue }) => {
       try {
-         const response = await axios.post(
-            "http://localhost:4000/users/signup",
-            data
-         );
+         const response = await axios.post(`${BASE_URL}users/signup`, data);
 
          return response.data;
       } catch (err) {
@@ -43,7 +39,7 @@ export const forgotPassword = createAsyncThunk(
    "user/forgot-password",
    async (data, { rejectWithValue }) => {
       try {
-         await axios.post("http://localhost:4000/users/forgot-password", data);
+         await axios.post(`${BASE_URL}users/forgot-password`, data);
       } catch (err) {
          return rejectWithValue(err.response.data);
       }
@@ -55,7 +51,7 @@ export const resetPassword = createAsyncThunk(
    async (data, { rejectWithValue }) => {
       try {
          await axios.patch(
-            `http://localhost:4000/users/reset-password/${data.resetToken}`,
+            `${BASE_URL}users/reset-password/${data.resetToken}`,
             data
          );
       } catch (err) {
