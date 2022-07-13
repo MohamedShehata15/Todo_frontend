@@ -74,14 +74,6 @@ const ForgotPassword = () => {
                {user.isError && (
                   <p className="text-danger">{user.errorMessage}</p>
                )}
-               <div className="mb-3">
-                  <Link
-                     to="/reset-password"
-                     className="form-link text-decoration-none"
-                  >
-                     Forgot Password
-                  </Link>
-               </div>
 
                <button
                   type="submit"
