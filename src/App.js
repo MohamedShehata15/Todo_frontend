@@ -13,7 +13,6 @@ import EmailVerification from "./pages/EmailVerification";
 import "./App.css";
 
 const App = () => {
-   s;
    return (
       <div>
          <div>
