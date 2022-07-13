@@ -1,7 +1,6 @@
 import React from "react";
 import Modal from "./Modal";
 
-import "./../app.css";
 import { useNavigate } from "react-router-dom";
 
 const Header = () => {
