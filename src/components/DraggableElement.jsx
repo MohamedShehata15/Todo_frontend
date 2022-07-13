@@ -2,8 +2,6 @@ import React from "react";
 import { Droppable } from "react-beautiful-dnd";
 import ListItem from "./ListItem";
 
-import "./../app.css";
-
 const DraggableElement = ({ name, todos }) => {
    return (
       <div className="droppable p-2">

@@ -1,7 +1,6 @@
 import React from "react";
 import { Draggable } from "react-beautiful-dnd";
 
-import "./../app.css";
 import { useDispatch } from "react-redux/es/exports";
 import { removeTodo } from "./../redux/todoSlice";
 import Modal from "./Modal";

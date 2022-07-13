@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from "react-redux/es/exports";
 import DraggableElement from "./DraggableElement";
 import { getAllTodos, updateTodo } from "../redux/todoSlice";
 
-import "./../app.css";
 import Modal from "./Modal";
 
 const lists = ["todo", "in progress", "under review", "rework", "completed"];

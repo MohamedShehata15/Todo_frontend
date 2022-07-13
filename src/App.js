@@ -10,9 +10,10 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import EmailVerification from "./pages/EmailVerification";
 
-import "./app.css";
+import "./App.css";
 
 const App = () => {
+   s;
    return (
       <div>
          <div>
