@@ -20,7 +20,6 @@ const ListItem = ({ item, index }) => {
                <div
                   className="drag_item"
                   ref={provided.innerRef}
-                  snapshot={snapshot}
                   {...provided.draggableProps}
                   {...provided.dragHandleProps}
                >

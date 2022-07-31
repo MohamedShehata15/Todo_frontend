@@ -52,6 +52,8 @@ export const updateTodo = createAsyncThunk(
             updateTodoState({
                bodyData: data.bodyData,
                todoIndex: data.action.data.todoIndex,
+               previous: data.action.data.previousTodo,
+               previousId: data.action.data.todoId,
             })
          );
 
@@ -138,6 +140,8 @@ const todoSlice = createSlice({
          // Change the status of the todo
          targetTodo[0].status = action.payload.destination.droppableId;
 
+         console.log(state.todosList[action.payload.destination.droppableId]);
+
          state.todosList[action.payload.destination.droppableId].splice(
             action.payload.destination.index,
             0,
@@ -147,6 +151,27 @@ const todoSlice = createSlice({
          return state;
       },
       updateTodoState: (state, action) => {
+         console.log("#####################");
+         // console.log(action.payload.previous);
+         // console.log(action.payload.todoIndex);
+         // console.log(action.payload.previousId);
+
+         let todoIndex = state.todosList[action.payload.previous].findIndex(
+            (t) => t._id === action.payload.previousId
+         );
+         console.log("----------------------");
+         state.todosList[action.payload.previous].splice(todoIndex, 1);
+
+         state.createdElements.push(action.payload.previous);
+
+         console.log(todoIndex);
+
+         // state.todosList[action.payload.destination.droppableId].splice(
+         //    action.payload.destination.index,
+         //    0,
+         //    targetTodo[0]
+         // );
+
          state.todosList[action.payload.bodyData.status][
             action.payload.todoIndex
          ] = {

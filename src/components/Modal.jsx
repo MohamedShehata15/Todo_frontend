@@ -24,6 +24,8 @@ const Modal = ({ element, id, item, todoIndex, action }) => {
                   data: {
                      todoStatus: item.status,
                      todoIndex,
+                     previousTodo: item.status,
+                     todoId: item._id,
                   },
                },
             })
